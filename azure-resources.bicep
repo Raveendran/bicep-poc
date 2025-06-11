@@ -1,51 +1,46 @@
-param location string = 'australiaeast' //resourceGroup().location
-param storageName string = 'udemyrkstorage' //name${uniqueString(resourceGroup().id)}
+@description('Location should be in australiasoutheast')
+param location string = resourceGroup().location
+param skuName string = 'Premium_LRS'
 
-// param namePrefix string = 'udemyrk'
+@description('Storage account name must be globally unique and can only contain lowercase letters and numbers.')
+param storageName string = 'udemyrkstorage'
+param namePrefix string = 'udemyrk'
 
-// param dockerImage string = 'ubuntu/nginx' //'nginxdemos/hello'
-// param dockerImageTag string = 'latest'
+param dockerImage string = 'mcr.microsoft.com/azuredocs/aci-helloworld'
+param dockerImageTag string = 'latest'
 
-// targetScope = 'resourceGroup'
+targetScope = 'resourceGroup'
 
-// //how do consume modules
-// module storage 'modules/storage.bicep' = {
-//   name: storageName
-//   params: {
-//     storageName: storageName
-//     location: location
-//   }
-// }
-
-// module appPlanDeploy 'modules/servicePlan.bicep' = {
-//   name: '${namePrefix}-appPlanDeploy'
-//   params: {
-//     namePrefix: namePrefix
-//     location: location
-
-//   }
-// }
-
-// module deployWebsite 'modules/webApp.bicep' = {
-//   name: '${namePrefix}-deploy-website'
-//   params: {
-//     location: location
-//     appPlanId: appPlanDeploy.outputs.planId
-//     dockerImage: dockerImage
-//     dockerImageTag: dockerImageTag
-//   }
-
-// }
-// output siteUrl string = deployWebsite.outputs.siteUrl
-
-// param location string = 'westus3'
-// param storageName string = 'xyzwgastorage'
-
-resource storageaccount 'Microsoft.Storage/storageAccounts@2024-01-01' = {
-  name: storageName
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: 'Premium_LRS'
+module storage 'modules/storage.bicep' = {
+  name: 'storageModule'
+  params: {
+    storageName: storageName
+    location: location
+    skuName: skuName
   }
 }
+
+module appServicePlan 'modules/servicePlan.bicep' = {
+  name: 'appServicePlanModule'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    skuName: 'F1'
+    capacity: 1
+  }
+}
+
+module webApp 'modules/webApp.bicep' = {
+  name: 'webAppModule'
+  params: {
+    location: location
+    namePrefix: namePrefix
+    appServicePlanId: appServicePlan.outputs.appServicePlanId
+    dockerImage: dockerImage
+    dockerImageTag: dockerImageTag
+  }
+}
+
+output siteUrl string = webApp.outputs.siteUrl
+output webApplicationId string = webApp.outputs.webApplicationId
+output webApplicationName string = webApp.outputs.webApplicationName
