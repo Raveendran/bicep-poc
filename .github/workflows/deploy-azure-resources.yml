@@ -33,6 +33,6 @@ jobs:
       - name: Deploy the Bicep Script
         uses: azure/arm-deploy@v1
         with:
-          scope: resourceGroup
+          scope: resourcegroup
           resourceGroupName: "udemy-bicep-rg" #change to reflect your Resource Group
           template: azure-resources.bicep
