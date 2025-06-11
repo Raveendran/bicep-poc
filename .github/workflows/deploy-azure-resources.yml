@@ -34,7 +34,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           scope: resourcegroup
-          resourceGroupName: "WebAppGroup" #change to reflect your Resource Group
+          resourceGroupName: "udemy-bicep-rg" #change to reflect your Resource Group
           template: azure-resources.bicep
 
 ## ** You can uncomment below code to deploy the resources, but 
