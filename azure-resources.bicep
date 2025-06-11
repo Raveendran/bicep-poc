@@ -25,7 +25,7 @@ module appServicePlan 'modules/servicePlan.bicep' = {
   params: {
     namePrefix: namePrefix
     location: location
-    skuName: 'F1'
+    skuName: 'B1'
     capacity: 1
   }
 }
